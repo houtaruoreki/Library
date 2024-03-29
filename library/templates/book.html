@@ -1,0 +1,100 @@
+<style>
+    .search-container {
+        margin-bottom: 20px;
+    }
+
+    .search-container input[type=text] {
+        padding: 10px;
+        border-radius: 5px;
+        width: calc(100% - 20px);
+        font-size: 16px;
+    }
+
+    .book-container {
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    .highlight {
+        background-color: yellow;
+    }
+
+    .add-book-link {
+        color: #ffffff;
+        background-color: #007bff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .add-book-link:hover {
+        background-color: #0056b3;
+    }
+
+</style>
+
+<div class="search-container">
+    <input type="text" name="search" id="search" autocomplete="off" placeholder="Search..."
+           oninput="searchBooks()">
+</div>
+
+{%if books%}
+<h1>Book List</h1>
+<div id="book-list">
+    {% for book in books %}
+    <div class="book-container">
+        <h2 class="title">{{ book.title }}</h2>
+        <p class="author">Author: {{ book.author }}</p>
+        <p class="description">Desc: {{ book.description }}</p>
+    </div>
+    {% endfor %}
+</div>
+{%else%}
+<h1>No Books in Library. Add new one</h1>
+<a class="add-book-link" href="{% url 'Book:add_book'%}">Add Book</a>
+{%endif%}
+
+<script>
+    function searchBooks() {
+        let input = document.getElementById('search').value.toLowerCase();
+        let bookContainers = document.querySelectorAll('.book-container');
+
+        bookContainers.forEach(container => {
+            let title = container.querySelector('.title').textContent.toLowerCase();
+            let author = container.querySelector('.author').textContent.toLowerCase();
+            let description = container.querySelector('.description').textContent.toLowerCase();
+
+            if (title.includes(input) || author.includes(input) || description.includes(input)) {
+                container.style.display = 'block';
+
+
+                if (title.includes(input)) {
+
+                    container.querySelector('.title').innerHTML = title.replace(new RegExp(input, 'gi'), match => `<span class="highlight">${match}</span>`);
+                }
+                if (author.includes(input)) {
+
+                    container.querySelector('.author').innerHTML = author.replace(new RegExp(input, 'gi'), match => `<span class="highlight">${match}</span>`);
+                }
+                if (description.includes(input)) {
+
+                    container.querySelector('.description').innerHTML = description.replace(new RegExp(input, 'gi'), match => `<span class="highlight">${match}</span>`);
+                }
+            } else {
+                container.style.display = 'none';
+            }
+        });
+
+
+        if (input === "") {
+            bookContainers.forEach(container => {
+                container.style.display = 'block';
+            });
+        }
+    }
+</script>
+
+
+
+
